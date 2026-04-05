@@ -3,7 +3,6 @@
 ![Framework](https://img.shields.io/badge/framework-Svelte%205-orange)
 ![Language](https://img.shields.io/badge/language-TypeScript-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
-![Release](https://img.shields.io/github/v/release/dincertekin/portfolio)
 
 Personal portfolio site built with **Svelte 5** and **Tailwind CSS**.
 
