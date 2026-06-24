@@ -1,45 +1,108 @@
 <script lang="ts">
-    import { fade } from "svelte/transition";
-    import type { Translation } from "../data/types";
+    import { onMount } from "svelte";
+    import { lang } from "../stores/lang.svelte";
+    import { translations } from "../data/translations";
 
-    import HeroBg from "../assets/hero-bg.webp";
+    const t = $derived(translations[lang.current].hero);
 
-    let { t }: { t: Translation } = $props();
-    let emailCopied = $state(false);
+    // Re-run terminal animation whenever language changes
+    let terminalKey = $derived(lang.current);
 
-    const copyEmail = (): void => {
-        navigator.clipboard.writeText("dincertekinbusiness@gmail.com");
-        emailCopied = true;
-        setTimeout(() => (emailCopied = false), 2000);
-    };
+    onMount(() => {
+        // Reveal hero elements immediately on load
+        requestAnimationFrame(() => {
+            document.getElementById("heroText")?.classList.add("is-visible");
+            setTimeout(
+                () =>
+                    document
+                        .getElementById("heroTerminal")
+                        ?.classList.add("is-visible"),
+                150,
+            );
+        });
+    });
+
+    function runTerminal(node: HTMLElement, lines: typeof t.terminal) {
+        const reduceMotion = window.matchMedia(
+            "(prefers-reduced-motion: reduce)",
+        ).matches;
+
+        function renderLines(lineIndex: number, charIndex: number) {
+            let html = "";
+            for (let i = 0; i < lineIndex; i++) {
+                const { type, text } = lines[i];
+                html +=
+                    type === "cmd"
+                        ? `<div class="line"><span class="prompt">$</span> ${text}</div>`
+                        : `<div class="line"><span class="out">${text}</span></div>`;
+            }
+            if (lineIndex < lines.length) {
+                const { type, text } = lines[lineIndex];
+                const partial = text.slice(0, charIndex);
+                html +=
+                    type === "cmd"
+                        ? `<div class="line"><span class="prompt">$</span> ${partial}<span class="cursor"></span></div>`
+                        : `<div class="line"><span class="out">${partial}</span><span class="cursor"></span></div>`;
+            }
+            node.innerHTML = html;
+        }
+
+        if (reduceMotion) {
+            renderLines(lines.length, 0);
+            return;
+        }
+
+        let lineIndex = 0;
+        let charIndex = 0;
+        let stopped = false;
+
+        function tick() {
+            if (stopped || lineIndex >= lines.length) return;
+            charIndex++;
+            renderLines(lineIndex, charIndex);
+            if (charIndex >= lines[lineIndex].text.length) {
+                lineIndex++;
+                charIndex = 0;
+                setTimeout(tick, 400);
+            } else {
+                setTimeout(tick, 28);
+            }
+        }
+        tick();
+
+        return {
+            destroy() {
+                stopped = true;
+            },
+        };
+    }
 </script>
 
-<section
-    class="min-h-[70vh] lg:min-h-[80vh] grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center"
->
-    <div in:fade={{ duration: 1000 }}>
-        <h1
-            class="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight leading-[0.95] mb-8"
-        >
-            {t.hero[0]} <br />
-            <span class="text-gray-300">{t.hero[1]}</span>
-        </h1>
-        <p
-            class="text-lg md:text-2xl text-gray-500 max-w-xl leading-relaxed mb-10"
-        >
-            {t.sub}
-        </p>
-        <button
-            onclick={copyEmail}
-            class="text-sm font-bold text-black border-b-2 border-black pb-1 hover:text-blue-600 hover:border-blue-600 transition-all cursor-pointer"
-        >
-            {emailCopied ? t.success : t.copy}
-        </button>
-    </div>
+<section class="hero">
+    <div class="wrap">
+        <div class="hero-text reveal-init" id="heroText">
+            <span class="eyebrow">{t.eyebrow}</span>
+            <h1>
+                {t.h1.part1}<span class="highlight">{t.h1.highlight}</span>{t.h1
+                    .part2}
+            </h1>
+            <p>{t.paragraph}</p>
+            <div class="hero-actions">
+                <a href="#projects" class="btn-primary">{t.btnProjects}</a>
+                <a href="#contact" class="btn-secondary">{t.btnContact}</a>
+            </div>
+        </div>
 
-    <div
-        class="rounded-[2.5rem] overflow-hidden shadow-2xl grayscale hover:grayscale-0 transition-all duration-700 block h-64 lg:h-125"
-    >
-        <img src={HeroBg} alt="Code" class="w-full h-full object-cover" />
+        <div class="terminal reveal-init" id="heroTerminal">
+            <div class="terminal-bar">
+                <span class="dot red"></span>
+                <span class="dot yellow"></span>
+                <span class="dot green"></span>
+                <span class="terminal-title">dincer@dincertekin.com — zsh</span>
+            </div>
+            {#key terminalKey}
+                <div class="terminal-body" use:runTerminal={t.terminal}></div>
+            {/key}
+        </div>
     </div>
 </section>

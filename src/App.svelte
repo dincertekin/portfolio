@@ -1,212 +1,84 @@
 <script lang="ts">
     import { onMount } from "svelte";
-    import { translations } from "./data/translations";
-    import type { Language } from "./data/types";
-
-    // Component Imports
-    import Nav from "./components/Nav.svelte";
+    import { lang } from "./stores/lang.svelte";
+    import Navbar from "./components/Navbar.svelte";
     import Hero from "./components/Hero.svelte";
-    import RepoCard from "./components/RepoCard.svelte";
     import About from "./components/About.svelte";
+    import Projects from "./components/Projects.svelte";
+    import Videos from "./components/Videos.svelte";
+    import Skills from "./components/Skills.svelte";
     import ContactForm from "./components/ContactForm.svelte";
+    import Footer from "./components/Footer.svelte";
 
-    import YouTubeImage from "./assets/youtube-image.webp";
-
-    // Global State using Svelte 5 Runes
-    let lang = $state<Language>("EN");
-    let scrolled = $state(false);
-
-    // Derived state: Updates automatically whenever 'lang' changes
-    const t = $derived(translations[lang]);
+    $effect(() => {
+        document.documentElement.lang = lang.current === "EN" ? "en" : "tr";
+        localStorage.setItem("portfolio-lang", lang.current);
+    });
 
     onMount(() => {
-        const handleScroll = () => {
-            scrolled = window.scrollY > 50;
-        };
+        // Scroll reveal for all sections (excludes hero which reveals itself)
+        const targets = document.querySelectorAll(
+            ".reveal-init:not(#heroText):not(#heroTerminal), .reveal-group",
+        );
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add("is-visible");
+                        observer.unobserve(entry.target);
+                    }
+                });
+            },
+            { threshold: 0.15 },
+        );
 
-        window.addEventListener("scroll", handleScroll);
-        return () => window.removeEventListener("scroll", handleScroll);
+        targets.forEach((t) => observer.observe(t));
     });
 </script>
 
-<Nav {t} {scrolled} bind:lang />
+<!-- SVG sprite sheet: icons referenced via <use href="#icon-..."> across all components -->
+<svg style="display:none" aria-hidden="true">
+    <symbol id="icon-github" viewBox="0 0 24 24" fill="currentColor">
+        <path
+            d="M12 0a12 12 0 0 0-3.79 23.4c.6.11.82-.26.82-.58v-2.23c-3.34.72-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.84 2.81 1.31 3.5 1 .11-.78.42-1.31.76-1.61-2.67-.3-5.47-1.34-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.12-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.29-1.55 3.3-1.23 3.3-1.23.66 1.66.24 2.88.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.6-2.81 5.63-5.48 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.7.83.58A12 12 0 0 0 12 0z"
+        />
+    </symbol>
+    <symbol
+        id="icon-external"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+    >
+        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+        <path d="M15 3h6v6" />
+        <path d="M10 14L21 3" />
+    </symbol>
+    <symbol id="icon-play" viewBox="0 0 24 24">
+        <path d="M8 5v14l11-7z" />
+    </symbol>
+    <symbol id="icon-linkedin" viewBox="0 0 24 24" fill="currentColor">
+        <path
+            d="M20.45 20.45h-3.55v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.36V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29zM5.34 7.43a2.07 2.07 0 1 1 0-4.14 2.07 2.07 0 0 1 0 4.14zM7.12 20.45H3.56V9h3.56v11.45z"
+        />
+    </symbol>
+    <symbol id="icon-youtube" viewBox="0 0 24 24" fill="currentColor">
+        <path
+            d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.6 15.5V8.5l6.3 3.5-6.3 3.5z"
+        />
+    </symbol>
+    <symbol id="icon-x" viewBox="0 0 24 24" fill="currentColor">
+        <path
+            d="M18.9 2H22l-7 8 7.5 10h-5.9l-4.6-6-5.3 6H2.5l7.5-8.5L2.7 2h6l4.1 5.5L18.9 2zm-2 16h1.7L7.2 4H5.4L16.9 18z"
+        />
+    </symbol>
+</svg>
 
-<main class="max-w-7xl mx-auto px-6 pt-24 md:pt-32 pb-20">
-    <Hero {t} />
-
-    <section id="work" class="py-20 lg:py-32">
-        <div
-            class="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-6"
-        >
-            <div>
-                <h2
-                    class="text-[10px] lg:text-sm font-bold uppercase tracking-[0.2em] text-gray-400 mb-4"
-                >
-                    {t.ossHeader}
-                </h2>
-                <h3 class="text-4xl lg:text-5xl font-bold tracking-tight">
-                    {t.work}
-                </h3>
-            </div>
-            <p class="text-gray-400 text-sm max-w-xs">
-                {t.workSub}
-            </p>
-        </div>
-
-        <div
-            class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8"
-        >
-            {#each t.repos as repo}
-                <RepoCard {repo} />
-            {/each}
-        </div>
-    </section>
-
-    <section class="py-20 lg:py-32 border-t border-black/5">
-        <div
-            class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center"
-        >
-            <div class="relative order-2 lg:order-1">
-                <div
-                    class="rounded-[2.5rem] lg:rounded-[3rem] aspect-video bg-zinc-900 flex items-center justify-center relative overflow-hidden group"
-                >
-                    <div
-                        style="background-image: url({YouTubeImage})"
-                        class="absolute inset-0 bg-cover opacity-20 group-hover:scale-105 transition-all duration-1000"
-                    ></div>
-                    <div
-                        class="z-10 w-12 h-12 lg:w-16 lg:h-16 rounded-full bg-red-600 flex items-center justify-center text-white shadow-xl transition-transform group-hover:scale-110"
-                    >
-                        <svg
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            fill="currentColor"><path d="M8 5v14l11-7z" /></svg
-                        >
-                    </div>
-                </div>
-                <div
-                    class="absolute -bottom-4 -right-2 md:right-10 bg-white shadow-2xl rounded-2xl lg:rounded-3xl p-4 lg:p-6 border border-black/5"
-                >
-                    <div class="flex gap-4 lg:gap-8">
-                        <div>
-                            <p
-                                class="text-[9px] uppercase tracking-widest font-bold text-gray-400 mb-1"
-                            >
-                                {t.stats[0]}
-                            </p>
-                            <p
-                                class="text-2xl lg:text-3xl font-black tracking-tight"
-                            >
-                                5K+
-                            </p>
-                        </div>
-                        <div class="w-px h-8 lg:h-10 bg-black/5"></div>
-                        <div>
-                            <p
-                                class="text-[9px] uppercase tracking-widest font-bold text-gray-400 mb-1"
-                            >
-                                {t.stats[1]}
-                            </p>
-                            <p
-                                class="text-2xl lg:text-3xl font-black tracking-tight"
-                            >
-                                300K+
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="order-1 lg:order-2">
-                <h2
-                    class="text-[10px] lg:text-sm font-bold uppercase tracking-[0.2em] text-blue-600 mb-6"
-                >
-                    {t.contentLabel}
-                </h2>
-                <h3 class="text-3xl lg:text-4xl font-bold mb-6">{t.content}</h3>
-                <p
-                    class="text-lg lg:text-xl text-gray-500 leading-relaxed mb-8"
-                >
-                    {t.contentSub}
-                </p>
-                <div class="flex flex-wrap gap-2 lg:gap-3">
-                    {#each ["Linux", "Cybersecurity", "Python", "Teaching"] as skill}
-                        <span
-                            class="px-4 py-2 rounded-full bg-gray-50 text-[10px] font-bold uppercase tracking-wider border border-black/5"
-                            >{skill}</span
-                        >
-                    {/each}
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <About {t} />
-
-    <ContactForm {t} />
-</main>
-
-<footer class="py-12 border-t border-black/5 bg-[#f5f5f7] text-[#6e6e73]">
-    <div class="max-w-7xl mx-auto px-6">
-        <div
-            class="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 text-[11px] lg:text-[12px]"
-        >
-            <div class="flex flex-col gap-4">
-                <div class="flex gap-6 font-medium">
-                    <a
-                        href="https://github.com/dincertekin"
-                        class="hover:underline hover:text-black transition-colors"
-                        >GitHub</a
-                    >
-                    <a
-                        href="https://youtube.com/@dincertekin"
-                        class="hover:underline hover:text-black transition-colors"
-                        >YouTube</a
-                    >
-                    <a
-                        href="https://linkedin.com/in/dincertekin"
-                        class="hover:underline hover:text-black transition-colors"
-                        >LinkedIn</a
-                    >
-                </div>
-                <p>{t.footer}</p>
-            </div>
-
-            <div
-                class="flex items-center gap-3 bg-black/5 p-1 rounded-full font-bold"
-            >
-                <button
-                    onclick={() => (lang = "EN")}
-                    class="px-4 py-1.5 rounded-full transition-all {lang ===
-                    'EN'
-                        ? 'bg-white text-black shadow-sm'
-                        : 'opacity-40 hover:opacity-100'}"
-                >
-                    English
-                </button>
-                <div class="w-px h-3 bg-black/10"></div>
-                <button
-                    onclick={() => (lang = "TR")}
-                    class="px-4 py-1.5 rounded-full transition-all {lang ===
-                    'TR'
-                        ? 'bg-white text-black shadow-sm'
-                        : 'opacity-40 hover:opacity-100'}"
-                >
-                    Türkçe
-                </button>
-            </div>
-        </div>
-    </div>
-</footer>
-
-<style>
-    /* Global styles remain here to ensure consistent base rendering */
-    :global(html) {
-        scroll-behavior: smooth;
-        background-color: #ffffff;
-        color: #1d1d1f;
-        -webkit-font-smoothing: antialiased;
-        font-family:
-            -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
-    }
-</style>
+<Navbar />
+<Hero />
+<About />
+<Projects />
+<Videos />
+<Skills />
+<ContactForm />
+<Footer />
