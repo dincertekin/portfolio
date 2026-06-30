@@ -39,24 +39,6 @@ src/
 └── main.ts                 # Entry point
 ```
 
-## Getting Started
-
-1. Clone the repo:
-   ```bash
-   git clone https://github.com/dincertekin/portfolio.git
-   ```
-
-2. Add your Web3Forms key to a `.env` file:
-   ```env
-   VITE_WEB3FORMS_KEY=your_key_here
-   ```
-
-3. Install and run:
-   ```bash
-   npm install
-   npm run dev
-   ```
-
 ## License
 
 [MIT License](./LICENSE)
