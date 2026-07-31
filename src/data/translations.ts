@@ -110,7 +110,7 @@ export const translations: Record<Lang, T> = {
         { type: "cmd", text: "whoami" },
         {
           type: "out",
-          text: "Dinçer Tekin — Security-first Software Engineer",
+          text: "Dinçer Tekin — Security-First Software Engineer",
         },
         { type: "cmd", text: "cat stack.txt" },
         {
@@ -176,14 +176,14 @@ export const translations: Record<Lang, T> = {
         "A few videos from my YouTube channel where I walk through how I build and debug things.",
       items: [
         {
-          title: "How I structure a SvelteKit project",
-          meta: "12:34 · Tutorial",
+          title: "I Compared Code Editors!",
+          meta: "5:43 · Review",
         },
         {
-          title: "Deploying to Hetzner for $5/month",
-          meta: "9:02 · Walkthrough",
+          title: "What is Docker? Learn Docker from Scratch!",
+          meta: "20:30 · Tutorial",
         },
-        { title: "Debugging a memory leak live", meta: "21:17 · Deep dive" },
+        { title: "Let's Create Artificial Intelligence with Python!", meta: "27:00 · Tutorial" },
       ],
     },
     skills: {
@@ -307,14 +307,14 @@ export const translations: Record<Lang, T> = {
         "YouTube kanalımdan birkaç video, geliştirme ve hata ayıklama sürecimi adım adım aktarıyorum.",
       items: [
         {
-          title: "SvelteKit projesini nasıl yapılandırıyorum",
-          meta: "12:34 · Eğitim",
+          title: "Kod Editörlerini Karşılaştırdım!",
+          meta: "5:43 · Görüş",
         },
-        { title: "Hetzner'e aylık $5'a deploy", meta: "9:02 · Rehber" },
         {
-          title: "Canlı olarak bellek sızıntısı debug etmek",
-          meta: "21:17 · Derinlemesine",
+          title: "Docker Nedir? Sıfırdan Docker Öğrenin!",
+          meta: "20:30 · Eğitim",
         },
+        { title: "Python ile Yapay Zeka Yapalım!", meta: "27:00 · Eğitim" },
       ],
     },
     skills: {

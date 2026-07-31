@@ -6,7 +6,7 @@
 
   let formStatus = $state<'idle' | 'sending' | 'success' | 'error'>('idle');
 
-  const WEB3FORMS_KEY = import.meta.env.VITE_WEB3FORMS_KEY ?? '';
+  const WEB3FORMS_KEY = 'a3a10d25-85f6-418b-aa5e-45731357594c';
 
   async function handleSubmit(event: SubmitEvent) {
     event.preventDefault();
@@ -51,9 +51,6 @@
         </a>
         <a href="https://youtube.com/@dincertekin" class="icon-link" aria-label="YouTube" target="_blank" rel="noopener noreferrer">
           <svg class="icon" viewBox="0 0 24 24"><use href="#icon-youtube"/></svg>
-        </a>
-        <a href="https://x.com/dincertekin" class="icon-link" aria-label="X (Twitter)" target="_blank" rel="noopener noreferrer">
-          <svg class="icon" viewBox="0 0 24 24"><use href="#icon-x"/></svg>
         </a>
       </div>
     </div>
